@@ -14,6 +14,10 @@ Legend: ✅ done · 🚧 in progress · ⏸️ built but disabled · ⬜ not sta
 | Required CI checks on `main` | ⬜ | Add `style` + `backend-ci` checks to the ruleset |
 | Conventions docs, scoped per module | ✅ | `docs/conventions.md`, `<module>/CONVENTIONS.md` |
 | Reviewer skill + feedback log + post-push retro | ✅ | `.claude/skills/reviewer`, `docs/review/feedback-log.md` |
+| Reviewer posts inline PR comments; harvest owner verdicts | 🚧 | Not yet exercised on a real PR |
+| Skeptic second reviewer (disproves findings before posting) | 🚧 | `.claude/agents/review-skeptic.md`; not yet exercised |
+| Automatic pre-push review hook | ⬜ | Proposed, awaiting decision |
+| `@claude` GitHub Action | ⬜ | Optional; needs `/install-github-app` by owner |
 | Google Java Style enforcement (save, Claude, commit, push, CI) | ✅ | |
 
 ## Backend
