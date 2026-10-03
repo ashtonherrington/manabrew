@@ -1,0 +1,39 @@
+name: infra-ci
+
+on:
+  push:
+    paths: ["infra/**", "backend/deploy/**", ".github/workflows/infra-ci.yml"]
+  pull_request:
+    branches: [main]
+    paths: ["infra/**", "backend/deploy/**", ".github/workflows/infra-ci.yml"]
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+      - name: Format check
+        run: terraform fmt -check -recursive infra/terraform
+      - name: Validate each environment
+        run: |
+          for env in infra/terraform/envs/*/; do
+            echo "::group::$env"
+            terraform -chdir="$env" init -backend=false -input=false
+            terraform -chdir="$env" validate
+            echo "::endgroup::"
+          done
+
+  helm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v4
+      - name: Lint and render charts (library → service → umbrella)
+        run: |
+          helm lint infra/helm/manabrew-lib
+          helm dependency update backend/deploy/helm/backend
+          helm lint backend/deploy/helm/backend
+          helm dependency update infra/helm/manabrew
+          helm lint infra/helm/manabrew
+          helm template manabrew infra/helm/manabrew > /dev/null

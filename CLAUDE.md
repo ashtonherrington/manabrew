@@ -3,7 +3,9 @@
 MTG deck-brewing app: ManaBox collection CSV + Scryfall card data + Claude.
 
 - Rules: `docs/conventions.md` (all modules) plus `<module>/CONVENTIONS.md` for
-  each module you touch, e.g. `backend/CONVENTIONS.md`.
+  each module you touch, e.g. `backend/CONVENTIONS.md`, `infra/CONVENTIONS.md`.
+- Progress: `ROADMAP.md`. Read it at the start of a session to see what's done;
+  update an item's status in the same PR that changes it.
 - The owner reviews all backend code and knows Java well: favor plain, explicit
   code over clever abstractions or framework magic.
 - The codebase will split into separate services and libraries. Keep modules

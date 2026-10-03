@@ -24,9 +24,13 @@ Items marked **(proposed)** are starting points awaiting review.
 | Module | What | Future shape |
 |---|---|---|
 | `backend` | Spring Boot API | Splits by feature into services and libraries |
+| `infra` | Terraform + shared Helm charts | Becomes a platform repo |
 
-Every module is self-contained: its own build, `Dockerfile` where it runs as a
-service, `CONVENTIONS.md`, and CI workflow filtered to its path.
+Every module is self-contained: its own build, `Dockerfile` and
+`deploy/helm/<module>` chart where it runs as a service, `CONVENTIONS.md`, and
+CI workflow filtered to its path.
+
+Progress across all modules is tracked in [`ROADMAP.md`](../ROADMAP.md).
 
 ## Formatting enforcement
 

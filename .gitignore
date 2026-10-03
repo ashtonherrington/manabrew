@@ -15,6 +15,17 @@ build/
 __pycache__/
 *.pyc
 
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+
+# Helm: vendored subcharts are rebuilt by `helm dependency update`
+**/helm/**/charts/
+**/helm/**/Chart.lock
+
 # Scryfall bulk data cache
 data/scryfall/
 
