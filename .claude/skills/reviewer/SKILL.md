@@ -11,7 +11,7 @@ never has to write every rule up front.
 ```
 Review ──► review-skeptic tries to disprove each finding (fresh context)
    │
-   └─► (PR) inline [reviewer] comments for survivors ──► owner accepts / rejects /
+   └─► (PR) inline 🤖 comments for survivors ──────► owner accepts / rejects /
                                                          restores dropped / adds own
                                                                      │
 Learn (chat corrections) ──► feedback log ◄──────── Harvest ◄────────┘
@@ -42,8 +42,9 @@ When asked to review a diff, branch, or PR.
    4. Split-readiness: anything coupling modules or features that the
       conventions say must stay separable.
    Skip pure formatting; the formatter owns it.
-4. Number findings `F1`, `F2`, … most-severe first. Each has `file:line`, the
-   problem, why it matters, and the rule (or `no rule` if it is judgment).
+4. Number findings `#1`, `#2`, … most-severe first. Each has `file:line`, a
+   label (see "Finding format"), the problem, why it matters, and the rule (or
+   `no rule` if it is judgment).
 5. **Skeptic pass.** Spawn the `review-skeptic` subagent (fresh context; do not
    pass it your reasoning beyond the findings themselves). Give it the diff
    command or PR number and the numbered findings. It returns
@@ -60,11 +61,46 @@ When asked to review a diff, branch, or PR.
    - **Otherwise:** report them in chat.
 7. Do not fix the code yet on a PR review: the owner's verdicts come first.
 
+### Finding format
+
+Every finding carries three things:
+
+- **Label** ([Conventional Comments](https://conventionalcomments.org)), so the
+  owner sees its weight at a glance:
+
+  | Label | Use for |
+  |---|---|
+  | `issue (blocking)` | Correctness bugs, data loss, security problems |
+  | `issue` | Rule violations |
+  | `suggestion` | Readability or split-readiness judgment calls (`no rule`) |
+  | `question` | Something that looks wrong but may be intended |
+
+  No `nit` label: formatting belongs to the formatter, and trivia isn't worth
+  the owner's time.
+- **Short number** `#n`, unique within one review, for the owner to reference
+  ("#2 and #4 are the same", `restore #3`).
+- **Hidden marker** `<!-- reviewer:pr<PR>-r<round>-f<n> -->`, unique across all
+  PRs and review rounds. It is invisible on GitHub and is how Harvest
+  identifies Claude's comments and the log references a finding. `<round>` is
+  1 for the first review on a PR; add 1 for each earlier review whose body
+  contains `<!-- reviewer:pr<PR>-r`.
+
+Rendered first line, then the body, then the marker last:
+
+```
+🤖 issue (blocking) · #2 · rule: backend/CONVENTIONS.md#Layers · skeptic: confirmed
+
+<problem and why it matters>
+
+<suggested fix>
+<!-- reviewer:pr5-r1-f2 -->
+```
+
 ### Posting to a PR
 
-Comments post under the owner's GitHub account (the `gh` login), so every
-comment starts with the `[reviewer Fn]` tag that marks it as Claude's. Reviews
-must use `event: COMMENT`; GitHub forbids approving or requesting changes on
+Comments post under the owner's GitHub account (the `gh` login); the hidden
+marker is what identifies them as Claude's. Reviews must use
+`event: COMMENT`, because GitHub forbids approving or requesting changes on
 your own PR.
 
 Write the payload to a temp JSON file and send it with `--input`, which avoids
@@ -74,13 +110,13 @@ shell-quoting problems:
 {
   "commit_id": "<head SHA from: gh pr view <n> --json headRefOid>",
   "event": "COMMENT",
-  "body": "[reviewer] <k> findings. Reply `accept` or `reject: <reason>` to each (or react 👍 / 👎), add your own comments anywhere, then tell Claude the review is done.\n\n<details><summary>Dropped after verification (<m>)</summary>\n\n[reviewer F4] <finding> · skeptic: <evidence>. Reply `restore F4: <reason>` to overrule.\n</details>",
+  "body": "🤖 Claude review: <k> findings. Reply `accept` or `reject: <reason>` to each (or react 👍 / 👎), add your own comments anywhere, then tell Claude the review is done.\n\n<details><summary>Dropped after verification (<m>)</summary>\n\n- **#4** suggestion: <finding> · skeptic: <evidence> <!-- reviewer:pr5-r1-f4 -->\n\nTo overrule, comment `restore #4: <reason>` on the PR.\n</details>\n<!-- reviewer:pr5-r1 -->",
   "comments": [
     {
       "path": "backend/src/main/java/com/manabrew/Foo.java",
       "line": 42,
       "side": "RIGHT",
-      "body": "[reviewer F1] · severity: bug · rule: backend/CONVENTIONS.md#Layers · skeptic: CONFIRMED\n\n<problem and why it matters>\n\n<suggested fix>"
+      "body": "🤖 issue (blocking) · #1 · rule: backend/CONVENTIONS.md#Layers · skeptic: confirmed\n\n<problem and why it matters>\n\n<suggested fix>\n<!-- reviewer:pr5-r1-f1 -->"
     }
   ]
 }
@@ -91,8 +127,8 @@ gh api repos/{owner}/{repo}/pulls/<n>/reviews --method POST --input <file>
 ```
 
 `line` must be a line in the PR diff (an added or context line on the new
-side). Findings about lines outside the diff go in the review `body` instead,
-still tagged `[reviewer Fn]`.
+side). Findings about lines outside the diff go in the review `body`, in the
+same format with their own marker.
 
 ## Mode 2: Harvest
 
@@ -104,20 +140,23 @@ When the owner says they have finished reviewing a PR.
    - review summaries: `gh api repos/{owner}/{repo}/pulls/<n>/reviews`
    - conversation comments: `gh api repos/{owner}/{repo}/issues/<n>/comments`
 2. Classify each item:
-   - **Claude finding**: a comment starting with `[reviewer Fn]`. Its verdict is
-     the owner's reply (`accept…` / `reject…`) or reaction (👍 / 👎); a reply
-     wins over a reaction. No response → `unanswered`.
-   - **Dropped finding restored**: an owner `restore Fn` reply on the review
-     body. The skeptic refuted a real problem; verdict `restored`.
+   - **Claude finding**: a comment containing `<!-- reviewer:pr` with an `-f<n>`
+     suffix. Its verdict is the owner's reply in that thread
+     (`accept…` / `reject…`) or reaction (👍 / 👎); a reply wins over a
+     reaction. No response → `unanswered`.
+   - **Dropped finding restored**: an owner PR comment `restore #n` matching a
+     finding in the latest review body's "Dropped after verification" list.
+     The skeptic refuted a real problem; verdict `restored`.
    - **Owner finding**: any other comment by the owner that points at a
      problem, i.e. something Claude's review missed.
    - Ignore pure discussion, questions already answered, and bot noise.
-3. Log every accepted, rejected, and owner finding in the feedback log (one
-   entry each), with `source: PR #<n> review`, the `finding` and `verdict`
-   fields, and the owner's exact words. Skip unanswered findings, but mention
-   how many there were.
-4. Fix the code for accepted findings and owner findings, commit, and push.
-   Reply to each handled comment with what changed (prefix `[reviewer]`).
+3. Log every accepted, rejected, restored, and owner finding in the feedback
+   log (one entry each), with `source: PR #<n> review`, `finding` set to the
+   marker ID (`pr5-r1-f2`, or `none` for owner findings), the `verdict`, and the
+   owner's exact words. Skip unanswered findings, but mention how many there
+   were.
+4. Fix the code for accepted, restored, and owner findings, commit, and push.
+   Reply to each handled comment with what changed, starting with `🤖`.
 5. Summarize: accepted / rejected / owner findings / unanswered, then run a
    Retro (Mode 4).
 

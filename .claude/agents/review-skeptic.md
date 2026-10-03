@@ -36,9 +36,9 @@ For each finding, try these lines of attack:
 Return exactly one line per finding, in input order:
 
 ```
-F<n>: CONFIRMED | <one sentence: the concrete evidence it is real>
-F<n>: PLAUSIBLE | <one sentence: why it may be real but you couldn't verify it>
-F<n>: REFUTED   | <one sentence: the concrete evidence it is wrong, with file:line>
+#<n>: CONFIRMED | <one sentence: the concrete evidence it is real>
+#<n>: PLAUSIBLE | <one sentence: why it may be real but you couldn't verify it>
+#<n>: REFUTED   | <one sentence: the concrete evidence it is wrong, with file:line>
 ```
 
 `REFUTED` requires concrete evidence (a file and line, a rule quote, or a

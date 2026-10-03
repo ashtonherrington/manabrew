@@ -13,7 +13,7 @@ Entry format (newest last):
 - source: <chat | PR #n review | self-review>
 - where: <file:line or area>
 - what was wrong: <the concrete problem, or what Claude claimed if rejected>
-- finding: <Fn, if it was a Claude finding | none>
+- finding: <marker ID like pr5-r1-f2, if it was a Claude finding | none>
 - skeptic: <CONFIRMED | PLAUSIBLE | REFUTED | n/a>
 - verdict: <accepted | rejected | restored | owner-finding | self-review>
 - owner's words: "<exact quote, if any>"
