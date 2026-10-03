@@ -18,8 +18,11 @@ __pycache__/
 # Scryfall bulk data cache
 data/scryfall/
 
-# Editors and OS
-.vscode/
+# Editors and OS (shared VS Code settings are committed)
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 .idea/
+.claude/settings.local.json
 .DS_Store
 Thumbs.db
