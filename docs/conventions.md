@@ -1,77 +1,52 @@
 # Conventions
 
-How manabrew code is structured and written. This is a living document: when we
-settle a pattern in review, it gets recorded here, and new code follows it.
+How manabrew code is structured and written. These are living documents: when
+we settle a pattern in review, it gets recorded, and new code follows it.
+
+## Where rules live
+
+Rules are scoped so each module can later move to its own repository with its
+rules attached:
+
+| File | Scope |
+|---|---|
+| `docs/conventions.md` (this file) | Cross-cutting: every module |
+| `<module>/CONVENTIONS.md` | One module, e.g. [`backend/CONVENTIONS.md`](../backend/CONVENTIONS.md) |
+| `docs/review/feedback-log.md` | Raw review feedback, each entry tagged with its module |
+
+New rules are proposed by the reviewer skill (`.claude/skills/reviewer/`) from
+logged feedback and only added once the owner approves them.
 
 Items marked **(proposed)** are starting points awaiting review.
 
-## Backend (Java 21, Spring Boot 4)
+## Modules
 
-### Package layout — package by feature (proposed)
+| Module | What | Future shape |
+|---|---|---|
+| `backend` | Spring Boot API | Splits by feature into services and libraries |
 
-```
-com.manabrew
-├── ManabrewApplication.java
-├── collection/     # ManaBox CSV import, owned cards
-├── card/           # Scryfall card data
-├── deck/           # decks and Claude-generated deck ideas
-├── simulation/     # Monte Carlo goldfish playouts
-└── common/         # cross-cutting code only (error handling, config)
-```
+Every module is self-contained: its own build, `Dockerfile` where it runs as a
+service, `CONVENTIONS.md`, and CI workflow filtered to its path.
 
-Each feature package holds its own controller, service, repository, and types.
-Classes are package-private unless another feature needs them. Features talk to
-each other through a service's public methods, never another feature's repository.
+## Formatting enforcement
 
-### Layers within a feature (proposed)
+Java follows the [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html),
+applied by google-java-format through the Spotless Gradle plugin. One formatter,
+enforced at every checkpoint:
 
-| Class | Responsibility |
+| Checkpoint | How |
 |---|---|
-| `XController` | HTTP only: parse/validate request, call service, map to response. No business logic. |
-| `XService` | Business logic and transactions. |
-| `XRepository` | SQL via Spring `JdbcClient`. |
-| records | Request/response DTOs and domain types are Java `record`s. |
+| Save in VS Code | Spotless Gradle extension (`.vscode/settings.json`) |
+| Claude edits a Java file | PostToolUse hook runs `spotlessApply` (`.claude/settings.json`) |
+| `git commit` | `.githooks/pre-commit` runs `spotlessCheck` on staged Java |
+| `git push` | `.githooks/pre-push` runs `spotlessCheck` |
+| Push to any branch / merge to main | `style` GitHub Action runs `spotlessCheck` |
 
-### Persistence
+## Workflow
 
-- **Flyway owns the schema.** Changes go through migrations in
-  `src/main/resources/db/migration`, named `V<n>__<description>.sql`, applied
-  automatically at startup. Never edit a migration that has been merged.
-- **jOOQ owns queries.** Type-safe SQL built in Java, no JPA/Hibernate. jOOQ
-  classes are generated from the schema the Flyway migrations produce, so a
-  renamed column is a compile error rather than a runtime failure.
-- Codegen setup arrives with the first migration (first feature PR).
-
-### API (proposed)
-
-- REST endpoints under `/api/v1/...`, JSON in and out.
-- Errors use RFC 9457 Problem Details (`spring.mvc.problemdetails.enabled`).
-- Validate request bodies with Bean Validation annotations and `@Valid`.
-
-### Style
-
-- Formatting follows the [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html),
-  applied by google-java-format (2-space indent) through the Spotless Gradle
-  plugin. One formatter, enforced at every checkpoint:
-
-  | Checkpoint | How |
-  |---|---|
-  | Save in VS Code | Spotless Gradle extension (`.vscode/settings.json`) |
-  | Claude edits a Java file | PostToolUse hook runs `spotlessApply` (`.claude/settings.json`) |
-  | `git commit` | `.githooks/pre-commit` runs `spotlessCheck` on staged Java |
-  | `git push` | `.githooks/pre-push` runs `spotlessCheck` |
-  | Push to any branch / merge to main | `style` GitHub Action runs `spotlessCheck` |
-
-  Fix violations with `./gradlew spotlessApply`.
-- Constructor injection only; no field `@Autowired` in production code.
-- Configuration comes from environment variables with local defaults in
-  `application.yml`. No secrets in the repository.
-
-### Testing (proposed)
-
-- Integration tests run against real Postgres via Testcontainers, never H2.
-- Controller tests use `MockMvcTester` with AssertJ.
-- The Testcontainers Postgres image matches `docker-compose.yml`.
+- Small, focused PRs: one skeleton or feature per PR.
+- When a pattern is agreed in review, update the matching conventions file in
+  the same PR.
 
 ## Open questions
 
