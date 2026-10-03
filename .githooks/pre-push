@@ -1,0 +1,9 @@
+#!/bin/sh
+# Last local check before code leaves the machine. Enable with: git config core.hooksPath .githooks
+echo "pre-push: checking Java formatting (google-java-format)..."
+if ! (cd backend && ./gradlew --quiet spotlessCheck); then
+  echo ""
+  echo "pre-push: formatting violations found. Fix with:"
+  echo "  cd backend && ./gradlew spotlessApply"
+  exit 1
+fi

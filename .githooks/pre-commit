@@ -1,0 +1,11 @@
+#!/bin/sh
+# Block commits containing unformatted Java. Enable with: git config core.hooksPath .githooks
+if git diff --cached --name-only --diff-filter=ACM | grep -q '^backend/.*\.java$'; then
+  echo "pre-commit: checking Java formatting (google-java-format)..."
+  if ! (cd backend && ./gradlew --quiet spotlessCheck); then
+    echo ""
+    echo "pre-commit: formatting violations found. Fix with:"
+    echo "  cd backend && ./gradlew spotlessApply && git add -u"
+    exit 1
+  fi
+fi

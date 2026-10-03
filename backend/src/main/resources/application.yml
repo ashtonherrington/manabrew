@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: manabrew
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/manabrew}
+    username: ${DB_USER:manabrew}
+    password: ${DB_PASSWORD:manabrew}
+  threads:
+    virtual:
+      enabled: true
+  mvc:
+    problemdetails:
+      enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always

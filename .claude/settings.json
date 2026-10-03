@@ -1,0 +1,27 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Edit(backend/**/*.java)",
+            "command": "cd \"$CLAUDE_PROJECT_DIR/backend\" && ./gradlew --quiet spotlessApply",
+            "shell": "bash",
+            "timeout": 120,
+            "statusMessage": "Formatting Java (google-java-format)..."
+          },
+          {
+            "type": "command",
+            "if": "Write(backend/**/*.java)",
+            "command": "cd \"$CLAUDE_PROJECT_DIR/backend\" && ./gradlew --quiet spotlessApply",
+            "shell": "bash",
+            "timeout": 120,
+            "statusMessage": "Formatting Java (google-java-format)..."
+          }
+        ]
+      }
+    ]
+  }
+}

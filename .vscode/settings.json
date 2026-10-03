@@ -1,0 +1,11 @@
+{
+  // Format Java on save with Spotless (google-java-format), the same formatter
+  // the git hooks and CI enforce, so the editor never disagrees with CI.
+  "[java]": {
+    "editor.defaultFormatter": "richardwillis.vscode-spotless-gradle",
+    "editor.formatOnSave": true
+  },
+  "spotlessGradle.format.enable": true,
+  "spotlessGradle.diagnostics.enable": true,
+  "java.import.gradle.wrapper.enabled": true
+}
