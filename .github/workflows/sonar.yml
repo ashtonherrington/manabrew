@@ -15,9 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-    defaults:
-      run:
-        working-directory: backend
     steps:
       - name: Skip when SonarQube Cloud is not set up
         if: env.SONAR_TOKEN == ''
@@ -36,4 +33,5 @@ jobs:
       # Tests produce the JaCoCo coverage report Sonar reads.
       - name: Build, test, and analyze
         if: env.SONAR_TOKEN != ''
+        working-directory: backend
         run: ./gradlew build sonar

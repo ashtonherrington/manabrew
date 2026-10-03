@@ -26,6 +26,11 @@ repositories {
     mavenCentral()
 }
 
+// Security overrides of versions managed by Spring Boot, found by the Trivy image
+// scan. Remove each line once a Spring Boot release ships the fixed version.
+ext['tomcat.version'] = '11.0.25'      // Boot 4.1.1 has 11.0.24: 3 CRITICAL CVEs
+ext['jackson-bom.version'] = '3.1.7'   // Boot 4.1.1 has 3.1.5: 5 HIGH CVEs
+
 dependencyManagement {
     imports {
         mavenBom 'org.springframework.modulith:spring-modulith-bom:2.1.1'
