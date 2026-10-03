@@ -19,7 +19,7 @@ jobs:
       - name: Skip when SonarQube Cloud is not set up
         if: env.SONAR_TOKEN == ''
         run: echo "SONAR_TOKEN not set; skipping. See docs/static-analysis.md."
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         if: env.SONAR_TOKEN != ''
         with:
           fetch-depth: 0  # full history for accurate new-code detection
