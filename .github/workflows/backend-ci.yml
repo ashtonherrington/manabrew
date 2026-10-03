@@ -1,0 +1,17 @@
+name: backend-ci
+
+# Every branch push, plus PRs into main (which also covers the PR's merge result).
+on:
+  push:
+    paths: ["backend/**", ".github/workflows/backend-*.yml"]
+  pull_request:
+    branches: [main]
+    paths: ["backend/**", ".github/workflows/backend-*.yml"]
+
+concurrency:
+  group: backend-ci-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    uses: ./.github/workflows/backend-test.yml

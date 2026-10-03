@@ -1,0 +1,30 @@
+# Reusable: run the backend test suite. Called by backend-ci.yml today, and by
+# the future deploy-qa / deploy-prod workflows as their first gate.
+name: backend-test
+
+on:
+  workflow_call:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: gradle/actions/setup-gradle@v4
+      # Testcontainers uses the runner's Docker for integration tests.
+      - name: Run tests
+        run: ./gradlew test
+      - name: Upload test report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-report
+          path: backend/build/reports/tests/test
+          retention-days: 7
