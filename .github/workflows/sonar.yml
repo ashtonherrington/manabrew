@@ -1,0 +1,39 @@
+name: sonar
+
+# SonarQube Cloud analysis. Skips cleanly until the SONAR_TOKEN secret exists;
+# setup steps are in docs/static-analysis.md.
+on:
+  push:
+    branches: [main]
+    paths: ["backend/**", ".github/workflows/sonar.yml"]
+  pull_request:
+    branches: [main]
+    paths: ["backend/**", ".github/workflows/sonar.yml"]
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Skip when SonarQube Cloud is not set up
+        if: env.SONAR_TOKEN == ''
+        run: echo "SONAR_TOKEN not set; skipping. See docs/static-analysis.md."
+      - uses: actions/checkout@v4
+        if: env.SONAR_TOKEN != ''
+        with:
+          fetch-depth: 0  # full history for accurate new-code detection
+      - uses: actions/setup-java@v4
+        if: env.SONAR_TOKEN != ''
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: gradle/actions/setup-gradle@v4
+        if: env.SONAR_TOKEN != ''
+      # Tests produce the JaCoCo coverage report Sonar reads.
+      - name: Build, test, and analyze
+        if: env.SONAR_TOKEN != ''
+        run: ./gradlew build sonar

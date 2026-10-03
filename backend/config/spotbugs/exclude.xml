@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SpotBugs patterns excluded project-wide.
+
+  EI_EXPOSE_REP / EI_EXPOSE_REP2: flag every Spring bean that stores an injected
+  dependency and every record holding a collection. Constructor injection makes
+  these false positives in practice.
+-->
+<FindBugsFilter>
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+  </Match>
+</FindBugsFilter>

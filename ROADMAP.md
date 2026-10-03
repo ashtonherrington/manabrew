@@ -19,6 +19,11 @@ Legend: ✅ done · 🚧 in progress · ⏸️ built but disabled · ⬜ not sta
 | Automatic pre-push review hook | ⬜ | Proposed, awaiting decision |
 | `@claude` GitHub Action | ⬜ | Optional; needs `/install-github-app` by owner |
 | Google Java Style enforcement (save, Claude, commit, push, CI) | ✅ | |
+| Error Prone + NullAway, Checkstyle, PMD, SpotBugs | ✅ | Verified with planted violations; `docs/static-analysis.md` |
+| ArchUnit + Spring Modulith architecture tests | ✅ | `ArchitectureTest`, `ModularityTest`; ~1s |
+| SonarQube Cloud | ⏸️ | Workflow ready; owner setup in `docs/static-analysis.md` |
+| Trivy image vulnerability scan | ✅ | On PRs (build + scan) and before publish |
+| Dependabot dependency updates | ✅ | Weekly: Gradle, Docker, Actions |
 
 ## Backend
 

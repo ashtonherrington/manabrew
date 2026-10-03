@@ -1,0 +1,5 @@
+# Vulnerabilities accepted after review. One CVE ID per line, each with a comment
+# saying why it is safe to ignore and when to revisit. Keep this list short.
+#
+# Example:
+# CVE-2099-12345  # Only affects feature X, which we don't use. Revisit 2027-01.
