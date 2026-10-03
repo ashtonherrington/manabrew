@@ -65,8 +65,17 @@ separable now:
   via google-java-format (see enforcement in `docs/conventions.md`). Fix with
   `./gradlew spotlessApply`.
 - Constructor injection only; no field `@Autowired` in production code.
+  *(ArchUnit: `noFieldInjection`)*
+- `@Transactional` only in `*Service` classes, never on private methods.
+  *(ArchUnit: `transactional*`)*
+- Non-null by default: mark nullable parameters, fields, and returns with
+  JSpecify `@Nullable`. *(NullAway, at compile time)*
 - Configuration comes from environment variables with local defaults in
   `application.yml`. No secrets in the repository.
+
+Rules tagged *(ArchUnit …)* or *(NullAway …)* fail the build automatically; see
+[`docs/static-analysis.md`](../docs/static-analysis.md) for every tool and how
+to suppress a finding.
 
 ## Testing (proposed)
 

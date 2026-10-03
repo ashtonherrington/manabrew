@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<ruleset name="manabrew"
+    xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+  <description>
+    PMD's curated quickstart rules, minus rules that duplicate google-java-format,
+    Checkstyle, or Error Prone, or that fight normal Spring Boot patterns.
+  </description>
+
+  <rule ref="rulesets/java/quickstart.xml">
+    <!-- Formatting and naming are covered by google-java-format and Checkstyle. -->
+    <exclude name="ControlStatementBraces"/>
+    <exclude name="UnnecessaryImport"/>
+  </rule>
+</ruleset>

@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+    "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+    "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+<!--
+  Checks switched off for all files.
+
+  Formatting: google-java-format owns layout, so Checkstyle must not second-guess
+  it (the two disagree on some line-wrapping cases).
+
+  Missing Javadoc: Google style asks for Javadoc on public members; we treat that
+  as a review judgment call rather than a build failure.
+-->
+<suppressions>
+  <suppress checks="Indentation|LineLength|OperatorWrap|SeparatorWrap|LeftCurly|GoogleRightCurly|WhitespaceAround|WhitespaceAfter|NoWhitespaceBefore|NoWhitespaceBeforeCaseDefaultColon|ParenPad|MethodParamPad|GenericWhitespace|ArrayBracketNoWhitespace|SingleSpaceSeparator|EmptyLineSeparator|CommentsIndentation|CustomImportOrder|FileTabCharacter|NoLineWrap|WhitespaceBeforeEmptyBody|TextBlockGoogleStyleFormatting|JavadocTagContinuationIndentation|JavadocLeadingAsteriskAlign" files=".*"/>
+  <suppress checks="MissingJavadocType|MissingJavadocMethod" files=".*"/>
+</suppressions>
