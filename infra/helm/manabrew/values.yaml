@@ -1,0 +1,5 @@
+# Defaults shared by every environment. Override per environment with
+# values-qa.yaml / values-prod.yaml (added when those environments exist).
+# Keys under a dependency's name are passed to that subchart.
+backend:
+  replicaCount: 1

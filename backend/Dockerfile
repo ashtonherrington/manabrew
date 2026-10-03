@@ -7,10 +7,11 @@ RUN ./gradlew --no-daemon dependencies > /dev/null
 COPY src src
 RUN ./gradlew --no-daemon bootJar -x test
 
-# Runtime stage: JRE only, non-root user.
+# Runtime stage: JRE only, non-root user. USER must be numeric so Kubernetes
+# can verify runAsNonRoot.
 FROM eclipse-temurin:21-jre
 RUN useradd --system --uid 1001 app
-USER app
+USER 1001
 WORKDIR /app
 COPY --from=build /workspace/build/libs/*.jar app.jar
 EXPOSE 8080

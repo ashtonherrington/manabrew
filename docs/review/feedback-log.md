@@ -24,3 +24,13 @@ Entry format (newest last):
 <!-- retro: last run never -->
 
 ## Entries
+
+### 2026-10-03 Named USER in Dockerfile breaks runAsNonRoot
+- module: backend
+- source: self-review
+- where: backend/Dockerfile:14, infra/helm/manabrew-lib/templates/_deployment.tpl
+- what was wrong: Dockerfile set `USER app` while the Helm library enforces `runAsNonRoot: true`; Kubernetes rejects pods whose image user isn't numeric.
+- owner's words: ""
+- category: other
+- covered by existing rule: no
+- status: open

@@ -1,0 +1,27 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/ashtonherrington/manabrew-backend
+  tag: ""  # defaults to Chart.appVersion; CI sets the git SHA
+  pullPolicy: IfNotPresent
+
+containerPort: 8080
+servicePort: 80
+
+probes:
+  liveness: /actuator/health/liveness
+  readiness: /actuator/health/readiness
+
+# Non-secret settings only.
+env:
+  DB_URL: jdbc:postgresql://postgres:5432/manabrew
+
+# Secret holding DB_USER and DB_PASSWORD, created per environment outside Git.
+envFromSecret: backend-db
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 384Mi
+  limits:
+    memory: 512Mi

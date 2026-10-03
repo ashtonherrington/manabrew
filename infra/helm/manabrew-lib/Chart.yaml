@@ -1,0 +1,5 @@
+apiVersion: v2
+name: manabrew-lib
+description: Reusable templates (Deployment, Service) shared by every manabrew service chart.
+type: library
+version: 0.1.0

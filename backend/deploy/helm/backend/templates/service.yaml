@@ -1,0 +1,1 @@
+{{ include "manabrew-lib.service" . }}
