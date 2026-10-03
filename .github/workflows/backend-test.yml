@@ -17,7 +17,7 @@ jobs:
         with:
           distribution: temurin
           java-version: "21"
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v6
       # Testcontainers uses the runner's Docker for integration tests.
       - name: Run tests
         run: ./gradlew test
